@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HTML Tag Remover</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    label { 
+      display: block; 
+      margin-bottom: 10px; /* Increased margin-bottom */
+    }
+    textarea {
+      width: calc(100% - 22px);
+      height: 150px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box; 
+      resize: vertical; 
+    }
+    input[type="text"] { 
+      width: calc(100% - 22px); 
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box; 
+    }
+ 
+button {
+  background-color: #28a745; /* Green */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px; /* Adjust the top margin as needed */
+  margin-bottom: 20px; /* Adjust the bottom margin as needed */
+  transition: background-color 0.3s;
+}
+    button:hover {
+      background-color: #3e8e41;
+    }
+  </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Tags remover</h1>
+  <label for="htmlInput">Enter HTML Code:</label>
+  <textarea id="htmlInput"></textarea>
+
+  <label for="tagsToRemove">Tags to Remove (comma-separated):</label>
+  <input type="text" id="tagsToRemove">
+
+  <button onclick="removeTags()">Remove Tags</button>
+
+  <label for="result">Result:</label>
+  <textarea id="result" readonly></textarea> 
+
+  <script>   function removeTags() {
+  const htmlInput = document.getElementById("htmlInput").value;
+  const tagsToRemove = document.getElementById("tagsToRemove").value
+                            .split(",") 
+                            .map(tag => tag.trim()); 
+
+  const regex = new RegExp(`<\\/?(${tagsToRemove.join('|')})[^>]*>`, 'gi'); 
+  const cleanedHTML = htmlInput.replace(regex, '');
+
+  document.getElementById("result").value = cleanedHTML;
+}
+  </script>
+</body>
+</html>
