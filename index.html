@@ -1,71 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>HTML Tag Remover</title>
+  <title>HTML Tag Remover and Replacer</title>
   <style>
     body { font-family: sans-serif; margin: 20px; }
-    label { 
-      display: block; 
-      margin-bottom: 10px; /* Increased margin-bottom */
-    }
-    textarea {
+    label { display: block; margin-bottom: 10px; }
+    textarea, input[type="text"] {
       width: calc(100% - 22px);
-      height: 150px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      box-sizing: border-box; 
-      resize: vertical; 
+      box-sizing: border-box;
     }
-    input[type="text"] { 
-      width: calc(100% - 22px); 
-      padding: 8px;
-      border: 1px solid #ccc;
+    textarea { height: 150px; resize: vertical; }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border: none;
       border-radius: 5px;
-      box-sizing: border-box; 
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      transition: background-color 0.3s;
     }
- 
-button {
-  background-color: #28a745; /* Green */
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 20px; /* Adjust the top margin as needed */
-  margin-bottom: 20px; /* Adjust the bottom margin as needed */
-  transition: background-color 0.3s;
-}
-    button:hover {
-      background-color: #3e8e41;
-    }
+    button:hover { background-color: #3e8e41; }
   </style>
 </head>
 <body>
-    <h1 style="text-align: center;">Tags remover</h1>
+  <h1 style="text-align: center;">Tags Remover and Replacer</h1>
   <label for="htmlInput">Enter HTML Code:</label>
   <textarea id="htmlInput"></textarea>
-
-  <label for="tagsToRemove">Tags to Remove (comma-separated):</label>
+  <label for="tagsToRemove">Tags to Remove(comma-separated, p,span etc..) </label>
   <input type="text" id="tagsToRemove">
-
+  <label for="tagsToReplace">Tags to Replace (comma-separated, format: <oldTag>:<newTag>):</label>
+  <input type="text" id="tagsToReplace">
   <button onclick="removeTags()">Remove Tags</button>
-
+  <button onclick="replaceTags()">Replace Tags</button>
+  <button onclick="copyResult()">Copy Result</button>
+  <button onclick="clearResult()">Clear Result</button>
   <label for="result">Result:</label>
-  <textarea id="result" readonly></textarea> 
+  <textarea id="result" readonly></textarea>
+  <script>
+    function removeTags() {
+      const htmlInput = document.getElementById("htmlInput").value;
+      const tagsToRemove = document.getElementById("tagsToRemove").value
+                            .split(",")
+                            .map(tag => tag.trim().replace(/[<>]/g, ''));
+      const regex = new RegExp(`<\\/?(${tagsToRemove.join('|')})[^>]*>`, 'gi');
+      const cleanedHTML = htmlInput.replace(regex, '');
+      document.getElementById("result").value = cleanedHTML;
+    }
 
-  <script>   function removeTags() {
-  const htmlInput = document.getElementById("htmlInput").value;
-  const tagsToRemove = document.getElementById("tagsToRemove").value
-                            .split(",") 
-                            .map(tag => tag.trim()); 
+    function replaceTags() {
+      const htmlInput = document.getElementById("htmlInput").value;
+      const tagsToReplace = document.getElementById("tagsToReplace").value
+                            .split(",")
+                            .map(pair => pair.split(":").map(tag => tag.trim().replace(/[<>]/g, '')));
+      let updatedHTML = htmlInput;
+      tagsToReplace.forEach(([oldTag, newTag]) => {
+        const regex = new RegExp(`<\\/?${oldTag}([^>]*)>`, 'gi');
+        updatedHTML = updatedHTML.replace(regex, (match, p1) => match.replace(oldTag, newTag));
+      });
+      document.getElementById("result").value = updatedHTML;
+    }
 
-  const regex = new RegExp(`<\\/?(${tagsToRemove.join('|')})[^>]*>`, 'gi'); 
-  const cleanedHTML = htmlInput.replace(regex, '');
+    function copyResult() {
+      const result = document.getElementById("result");
+      result.select();
+      document.execCommand("copy");
+      alert("Result copied to clipboard!");
+    }
 
-  document.getElementById("result").value = cleanedHTML;
-}
+    function clearResult() {
+      document.getElementById("result").value = '';
+    }
   </script>
 </body>
 </html>
